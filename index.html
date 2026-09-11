@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="th">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -21,7 +21,7 @@
                     <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span> LIVE SYSTEM
                 </div>
                 <h1 class="text-3xl md:text-4xl font-extrabold tracking-tight text-white">Senzy Hub <span class="text-transparent bg-clip-text bg-gradient-to-r from-indigo-400 to-purple-400">Dashboard</span></h1>
-                <p class="text-slate-400 text-sm mt-1">ระบบติดตามสถิติการใช้งาน จัดอันดับผู้เล่น และเกมยอดฮิต</p>
+                <p class="text-slate-400 text-sm mt-1">Real-time script execution tracking, user rankings, and popular games.</p>
             </div>
             
             <div class="bg-slate-900/80 border border-slate-800/80 backdrop-blur-xl px-6 py-4 rounded-3xl glow-box flex items-center gap-5 w-full md:w-auto">
@@ -39,17 +39,17 @@
         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
             <!-- Top Users -->
             <div class="bg-slate-900/60 border border-slate-800/80 backdrop-blur-xl rounded-3xl p-6 shadow-xl">
-                <h2 class="font-bold text-lg text-white mb-4 flex items-center gap-2">👑 Top Users (ผู้ใช้งานสูงสุด)</h2>
+                <h2 class="font-bold text-lg text-white mb-4 flex items-center gap-2">👑 Top Users</h2>
                 <div id="top-users-list" class="space-y-3">
-                    <div class="text-sm text-slate-500 text-center py-4">กำลังโหลดข้อมูล...</div>
+                    <div class="text-sm text-slate-500 text-center py-4">Loading data...</div>
                 </div>
             </div>
 
             <!-- Top Games -->
             <div class="bg-slate-900/60 border border-slate-800/80 backdrop-blur-xl rounded-3xl p-6 shadow-xl">
-                <h2 class="font-bold text-lg text-white mb-4 flex items-center gap-2">🎮 Top Games (แมพยอดฮิต)</h2>
+                <h2 class="font-bold text-lg text-white mb-4 flex items-center gap-2">🎮 Top Games</h2>
                 <div id="top-games-list" class="space-y-3">
-                    <div class="text-sm text-slate-500 text-center py-4">กำลังโหลดข้อมูล...</div>
+                    <div class="text-sm text-slate-500 text-center py-4">Loading data...</div>
                 </div>
             </div>
         </div>
@@ -67,7 +67,7 @@
                 </div>
             </div>
             <div id="log-list" class="divide-y divide-slate-800/50">
-                <div class="px-6 py-8 text-center text-slate-500">กำลังซิงค์ข้อมูล...</div>
+                <div class="px-6 py-8 text-center text-slate-500">Syncing data...</div>
             </div>
         </div>
 
@@ -114,14 +114,15 @@
                                 <div class="text-[11px] text-slate-400">ID: ${data.userid}</div>
                             </div>
                         </div>
-                        <span class="px-3 py-1 bg-indigo-500/10 text-indigo-400 text-xs font-bold rounded-xl border border-indigo-500/20">${data.count} รอบ</span>
+                        <span class="px-3 py-1 bg-indigo-500/10 text-indigo-400 text-xs font-bold rounded-xl border border-indigo-500/20">${data.count} runs</span>
                     </div>
                 `).join('');
 
-                // Top Games (ดึงรูป Thumbnail ของแมพมาโชว์ด้วย)
+                // Top Games (กรองเอาเฉพาะแมพที่ไม่ใช่ Unsupported Game ออกจากการนับอันดับ จะได้ดูสมจริง)
                 const gameMap = {};
                 logs.forEach(log => {
                     const map = log.mapname || "Unknown Map";
+                    if (map === "Unsupported Game") return; // ข้ามแมพที่ไม่รองรับ
                     if (!gameMap[map]) {
                         gameMap[map] = { count: 0, thumb: log.mapthumbnail, placeid: log.placeid };
                     }
@@ -129,19 +130,23 @@
                 });
                 const sortedGames = Object.entries(gameMap).sort((a, b) => b[1].count - a[1].count).slice(0, 5);
 
-                document.getElementById('top-games-list').innerHTML = sortedGames.map(([mapname, data], index) => `
-                    <div class="flex items-center justify-between p-3 rounded-2xl bg-slate-800/40 border border-slate-700/50">
-                        <div class="flex items-center gap-3">
-                            <span class="font-extrabold text-xs text-purple-400 w-4">#${index + 1}</span>
-                            <img src="${data.thumb || 'https://tr.rbxcdn.com/3513dc3b91a7cbb02e0b571169aa354f/150/150/Image/Png'}" class="w-10 h-10 rounded-xl object-cover bg-slate-800 border border-slate-700">
-                            <div>
-                                <div class="font-bold text-white text-sm truncate max-w-[160px]">${mapname}</div>
-                                <div class="text-[11px] text-slate-400">PlaceID: ${data.placeid}</div>
+                if (sortedGames.length === 0) {
+                    document.getElementById('top-games-list').innerHTML = '<div class="text-sm text-slate-500 text-center py-4">No supported games played yet</div>';
+                } else {
+                    document.getElementById('top-games-list').innerHTML = sortedGames.map(([mapname, data], index) => `
+                        <div class="flex items-center justify-between p-3 rounded-2xl bg-slate-800/40 border border-slate-700/50">
+                            <div class="flex items-center gap-3">
+                                <span class="font-extrabold text-xs text-purple-400 w-4">#${index + 1}</span>
+                                <img src="${data.thumb || 'https://tr.rbxcdn.com/3513dc3b91a7cbb02e0b571169aa354f/150/150/Image/Png'}" class="w-10 h-10 rounded-xl object-cover bg-slate-800 border border-slate-700">
+                                <div>
+                                    <div class="font-bold text-white text-sm truncate max-w-[160px]">${mapname}</div>
+                                    <div class="text-[11px] text-slate-400">PlaceID: ${data.placeid}</div>
+                                </div>
                             </div>
+                            <span class="px-3 py-1 bg-purple-500/10 text-purple-400 text-xs font-bold rounded-xl border border-purple-500/20">${data.count} runs</span>
                         </div>
-                        <span class="px-3 py-1 bg-purple-500/10 text-purple-400 text-xs font-bold rounded-xl border border-purple-500/20">${data.count} ครั้ง</span>
-                    </div>
-                `).join('');
+                    `).join('');
+                }
 
                 // Live Stream Logs
                 document.getElementById('log-list').innerHTML = logs.slice(0, 15).map(log => `
