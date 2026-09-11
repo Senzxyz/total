@@ -203,22 +203,31 @@
             }
 
             document.getElementById('unsupported-list').innerHTML = pageItems.map(log => `
-                <div class="px-4 py-3.5 flex items-center justify-between hover:bg-white/[0.02] transition-colors rounded-2xl">
-                    <div class="flex items-center space-x-3.5">
-                        <img src="${log.avatarurl || 'https://tr.rbxcdn.com/3513dc3b91a7cbb02e0b571169aa354f/150/150/Image/Png'}" class="w-10 h-10 rounded-xl bg-black/40 border border-white/[0.08] object-cover shadow-sm">
-                        <div>
-                            <div class="font-bold text-white text-xs flex items-center gap-2">
-                                <a href="https://www.roblox.com/users/${log.userid}/profile" target="_blank" class="hover:text-rose-400 transition">${log.username}</a>
-                                <span class="text-[10px] px-1.5 py-0.5 rounded bg-white/[0.04] text-slate-400 border border-white/[0.06] font-mono">ID: ${log.userid}</span>
+                <div class="px-6 py-3.5 flex items-center justify-between hover:bg-white/[0.02] transition-colors rounded-2xl">
+                    <!-- Left: Avatar & User Info -->
+                    <div class="flex items-center space-x-3.5 w-1/3">
+                        <img src="${log.avatarurl || 'https://tr.rbxcdn.com/3513dc3b91a7cbb02e0b571169aa354f/150/150/Image/Png'}" class="w-10 h-10 rounded-xl bg-black/40 border border-white/[0.08] object-cover shadow-sm flex-shrink-0">
+                        <div class="min-w-0">
+                            <div class="font-bold text-white text-xs flex items-center gap-2 truncate">
+                                <a href="https://www.roblox.com/users/${log.userid}/profile" target="_blank" class="hover:text-rose-400 transition truncate">${log.username}</a>
                             </div>
-                            <div class="text-[11px] text-rose-400 font-medium mt-1 flex items-center gap-2 font-mono">
-                                <img src="${log.mapthumbnail || 'https://tr.rbxcdn.com/3513dc3b91a7cbb02e0b571169aa354f/150/150/Image/Png'}" class="w-4 h-4 rounded object-cover border border-white/[0.08]">
-                                <span>Place ID:</span> 
-                                <a href="https://www.roblox.com/games/${log.placeid}" target="_blank" class="underline hover:text-white">${log.placeid}</a>
+                            <span class="text-[10px] px-1.5 py-0.5 rounded bg-white/[0.04] text-slate-400 border border-white/[0.06] font-mono inline-block mt-0.5">ID: ${log.userid}</span>
+                        </div>
+                    </div>
+
+                    <!-- Center: Map Thumbnail & Place ID (วางตรงกลางเด่นๆ ชัดเจน) -->
+                    <div class="flex items-center justify-center space-x-2.5 w-1/3 px-2">
+                        <img src="${log.mapthumbnail || 'https://tr.rbxcdn.com/3513dc3b91a7cbb02e0b571169aa354f/150/150/Image/Png'}" class="w-9 h-9 rounded-xl bg-black/40 border border-white/[0.08] object-cover shadow-md flex-shrink-0">
+                        <div class="text-center truncate">
+                            <div class="text-xs text-rose-400 font-bold truncate">Unsupported Game</div>
+                            <div class="text-[10px] text-slate-500 font-mono">
+                                Place: <a href="https://www.roblox.com/games/${log.placeid}" target="_blank" class="underline hover:text-white">${log.placeid}</a>
                             </div>
                         </div>
                     </div>
-                    <div class="text-right">
+
+                    <!-- Right: Status & Time -->
+                    <div class="w-1/3 text-right">
                         <span class="inline-flex items-center px-2.5 py-0.5 bg-rose-500/10 text-rose-400 text-[10px] font-bold rounded-lg border border-rose-500/20">Unsupported</span>
                         <div class="text-[10px] text-slate-500 mt-1 font-mono">${new Date(log.created_at).toLocaleString('en-US')}</div>
                     </div>
@@ -310,7 +319,7 @@
                     }).join('');
                 }
 
-                // --- 3. Live Stream Logs (จัดวางรูปปกเกมไว้ตรงกลางเด่นๆ) ---
+                // --- 3. Live Stream Logs ---
                 document.getElementById('log-list').innerHTML = logs.slice(0, 15).map(log => `
                     <div class="px-6 py-3.5 flex items-center justify-between hover:bg-white/[0.02] transition-colors">
                         <!-- Left: Avatar & User Info -->
@@ -324,7 +333,7 @@
                             </div>
                         </div>
 
-                        <!-- Center: Map Thumbnail & Name (วางตรงกลางเด่นๆ ชัดเจน) -->
+                        <!-- Center: Map Thumbnail & Name -->
                         <div class="flex items-center justify-center space-x-2.5 w-1/3 px-2">
                             <img src="${log.mapthumbnail || 'https://tr.rbxcdn.com/3513dc3b91a7cbb02e0b571169aa354f/150/150/Image/Png'}" class="w-9 h-9 rounded-xl bg-black/40 border border-white/[0.08] object-cover shadow-md flex-shrink-0">
                             <div class="text-center truncate">
